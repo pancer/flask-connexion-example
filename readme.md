@@ -15,4 +15,9 @@
   - flask db migrate
 - Apply migration (after migration created)
   - flask db upgrade
-    
+
+## Docker build & run
+- Build
+  - docker build -t my-app .
+- Run
+  - docker run -p 5000:5000 my-app
