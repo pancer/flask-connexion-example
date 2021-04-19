@@ -10,6 +10,9 @@ import time
 JWT_SECRET = 'MY JWT SECRET'
 JWT_LIFETIME_SECONDS = 600000
 
+INVOICE_APIKEY = '123abc'
+SHIPPING_APIKEY = 'abc321'
+
 
 def has_role(arg):
     def has_role_inner(fn):
@@ -53,6 +56,28 @@ def auth(auth_body):
             "invoice",
             "social"
         ]
+    }
+    encoded = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+    return encoded
+
+
+def auth_microservice(auth_body_microservice):
+    apikey = auth_body_microservice['apikey']
+
+    if apikey == INVOICE_APIKEY:
+        roles = ['invoice']
+        sub = 'invoice'
+    elif apikey == SHIPPING_APIKEY:
+        roles = ['shipping', 'editing']
+        sub = 'shipping'
+
+    timestamp = int(time.time())
+    payload = {
+        "iss": 'my app',
+        "iat": int(timestamp),
+        "exp": int(timestamp + JWT_LIFETIME_SECONDS),
+        "sub": sub,
+        "roles": roles
     }
     encoded = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
     return encoded
