@@ -2,3 +2,4 @@ Flask
 Flask-Migrate
 connexion[swagger-ui]
 sqlalchemy
+pyjwt

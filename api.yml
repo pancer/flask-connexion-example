@@ -8,9 +8,18 @@ consumes:
 produces:
   - application/json
 basePath: "/api"
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-authentication-scheme: Bearer
+    x-bearerInfoFunc: app.decode_token
 paths:
   /test1/{test1_id}:
     get:
+      security:
+        - jwt: [ 'secret' ]
       tags: [ Test1 ]
       operationId: app.get_test1
       summary: Testing endpoint
@@ -43,6 +52,18 @@ paths:
           description: Return person object
         404:
           description: Person not found
+  /auth:
+    post:
+      tags: [ Auth ]
+      operationId: app.auth
+      parameters:
+        - $ref: '#/parameters/auth_body'
+      responses:
+        200:
+          description: Return jwt token
+        401:
+          description: Bad auth
+
 parameters:
   test1_id:
     name: test1_id
@@ -65,9 +86,25 @@ parameters:
         surname:
           type: string
 
+  auth_body:
+    name: auth_body
+    description: Login and get token
+    in: body
+    schema:
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
   person_name:
     name: person_name
     description: The name of the person we're looking for
     in: path
     required: true
     type: string
+
+
