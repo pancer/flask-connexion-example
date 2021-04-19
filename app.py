@@ -20,8 +20,11 @@ def has_role(arg):
                 if 'AUTHORIZATION' in headers:
                     token = headers['AUTHORIZATION'].split(' ')[1]
                     decoded_token = decode_token(token)
-                    if 'admin' in decoded_token['roles'] or arg in decoded_token['roles']:
+                    if 'admin' in decoded_token['roles']:
                         return fn(*args, **kwargs)
+                    for role in arg:
+                        if role in decoded_token['roles']:
+                            return fn(*args, **kwargs)
                     abort(401)
                 return fn(*args, **kwargs)
             except Exception as e:
@@ -30,7 +33,7 @@ def has_role(arg):
     return has_role_inner
 
 
-@has_role('invoice')
+@has_role(['invoice', 'shipping'])
 def get_test1(test1_id):
     data = request.data
     headers = request.headers
